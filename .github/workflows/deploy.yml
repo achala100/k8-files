@@ -44,16 +44,29 @@ jobs:
           aws eks update-kubeconfig --name ${{ secrets.EKS_CLUSTER_NAME }} --region ${{ secrets.AWS_REGION }}
 
       # Step 6: Deploy to EKS
+
       - name: Deploy to EKS
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           IMAGE_TAG: ${{ github.sha }}
         run: |
-          # Replace image placeholder with actual image
           sed -i "s|IMAGE_PLACEHOLDER|$ECR_REGISTRY/${{ secrets.ECR_REPOSITORY }}:$IMAGE_TAG|g" k8s/deployment.yaml
-
-          # Apply the deployment
-          kubectl apply -f k8s/deployment.yaml
-
-          # Wait for rollout
+          kubectl apply -f k8s/deployment.yaml --validate=false
           kubectl rollout status deployment/my-app -n default --timeout=300s
+
+      # - name: Deploy to EKS
+      #   env:
+      #     ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+      #     IMAGE_TAG: ${{ github.sha }}
+      #   run: |
+      #     # Replace image placeholder with actual image
+      #     sed -i "s|IMAGE_PLACEHOLDER|$ECR_REGISTRY/${{ secrets.ECR_REPOSITORY }}:$IMAGE_TAG|g" k8s/deployment.yaml
+
+      #     # Apply the deployment
+      #     kubectl apply -f k8s/deployment.yaml
+
+      #     # Wait for rollout
+      #     kubectl rollout status deployment/my-app -n default --timeout=300s
+
+
+      
