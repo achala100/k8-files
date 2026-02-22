@@ -1,7 +1,7 @@
-FROM node:18-alpine
+FROM python:3.11-slim
 WORKDIR /app
-COPY package*.json ./
-RUN npm install
+COPY requirements.txt .
+RUN pip install -r requirements.txt
 COPY . .
 EXPOSE 80
-CMD ["node", "server.js"]
+CMD ["python", "app.py"]
